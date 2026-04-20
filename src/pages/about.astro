@@ -1,0 +1,90 @@
+---
+import Base from "../layouts/Base.astro";
+
+const aboutSchema = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Harmony Threads",
+  "url": `${Astro.site || ""}about`,
+  "description": "The story behind Harmony Threads — vintage-inspired band graphic tees born from a love of music.",
+};
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": Astro.site?.toString() || "" },
+    { "@type": "ListItem", "position": 2, "name": "About", "item": `${Astro.site || ""}about` },
+  ],
+};
+---
+
+<Base
+  title="About Harmony Threads | Our Story"
+  description="The story behind Harmony Threads — premium vintage-inspired band graphic tees born from a love of music and a frustration with fast fashion merch."
+  structuredData={[aboutSchema, breadcrumb]}
+>
+  <section class="py-20 max-w-7xl mx-auto px-6">
+    <nav class="flex items-center gap-2 text-xs mb-12" style="color: var(--muted);">
+      <a href="/" class="hover:text-[var(--accent)] transition-colors">Home</a>
+      <span>/</span>
+      <span>About</span>
+    </nav>
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div>
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-4 block" style="color: var(--accent);">About us</span>
+        <h1 class="text-5xl font-bold leading-tight mb-6" style="font-family: 'Fraunces', serif;">Born from a crate of vinyl and a sewing machine</h1>
+        <p class="text-lg leading-relaxed mb-4" style="color: var(--muted);">Harmony Threads started in 2026 after our founder — a lifelong collector and weekend musician — couldn't find merch that honoured the bands that mattered without looking like it was printed in a hurry on an industrial estate.</p>
+        <p class="leading-relaxed mb-4" style="color: var(--muted);">Every design is researched, sketched, and sweated over by people who actually own the records. We source premium 180gsm ring-spun cotton, print with water-based inks, and pack every order with the care you'd give a first-press LP.</p>
+        <p class="leading-relaxed" style="color: var(--muted);">The music that shaped you deserves better than a souvenir. That's why we exist.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="aspect-square rounded-xl overflow-hidden"><img src="https://picsum.photos/seed/music1/400/400" alt="Vinyl record" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden mt-8"><img src="https://picsum.photos/seed/studio2/400/400" alt="Studio" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden -mt-8"><img src="https://picsum.photos/seed/concert3/400/400" alt="Concert" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden"><img src="https://picsum.photos/seed/print4/400/400" alt="Printing" class="w-full h-full object-cover" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20" style="background: #f3ede4;">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14"><h2 class="text-3xl font-bold" style="font-family: 'Fraunces', serif;">How we make them</h2></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { step: "01", title: "Research the legacy", body: "Every design starts with deep research — listening sessions, archive dives, conversations with collectors." },
+          { step: "02", title: "Sketch, refine, reject", body: "Most concepts get binned. The ones that survive have earned it. We work with designers who are fans first." },
+          { step: "03", title: "Print on premium cotton", body: "180gsm ring-spun cotton, water-based screen printing. The real thing, made to last." },
+        ].map(item => (
+          <div class="p-8 rounded-xl border" style="border-color: var(--border); background: white;">
+            <span class="text-5xl font-bold block mb-4" style="font-family: 'Fraunces', serif; color: rgba(184,92,56,0.2);">{item.step}</span>
+            <h3 class="text-xl font-bold mb-3" style="font-family: 'Fraunces', serif;">{item.title}</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      {[
+        { value: "6,200+", label: "Orders shipped" },
+        { value: "4.9/5", label: "Average rating" },
+        { value: "180gsm", label: "Cotton weight" },
+        { value: "30 days", label: "Return window" },
+      ].map(stat => (
+        <div class="text-center">
+          <p class="text-4xl font-bold mb-2" style="font-family: 'Fraunces', serif; color: var(--accent);">{stat.value}</p>
+          <p class="text-sm" style="color: var(--muted);">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="pb-24 max-w-2xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-bold mb-4" style="font-family: 'Fraunces', serif;">Come and find your tee</h2>
+    <p class="mb-8" style="color: var(--muted);">We've got music for every era. Browse the collection and find the one that's yours.</p>
+    <a href="/shop" class="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-lg transition-all hover:opacity-90" style="background: var(--accent);">Shop the collection →</a>
+  </section>
+</Base>
