@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --accent: #b85c38;
+    --accent-dark: #8f4329;
+    --paper: #faf7f2;
+    --ink: #1a1209;
+    --muted: #6b5e4e;
+    --border: #e0d8cc;
+  }
+
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Fraunces", Georgia, serif;
+  }
+}
