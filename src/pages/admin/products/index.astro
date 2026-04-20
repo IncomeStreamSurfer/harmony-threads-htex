@@ -1,0 +1,49 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { serverClient } from "../../../lib/supabase";
+
+export const prerender = false;
+
+const sb = serverClient();
+const { data: products } = await sb
+  .from("products")
+  .select("id, slug, name, price_pence, image_url, published_at, created_at")
+  .order("created_at", { ascending: false });
+---
+
+<AdminLayout title="Products">
+  <div style="background:white; border:1px solid #e0d8cc; border-radius:12px; overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1px solid #e0d8cc; background:#faf7f2;">
+          <th style="text-align:left; padding:12px 16px; font-weight:500; color:#6b5e4e;">Product</th>
+          <th style="text-align:left; padding:12px 16px; font-weight:500; color:#6b5e4e;">Price</th>
+          <th style="text-align:left; padding:12px 16px; font-weight:500; color:#6b5e4e;">Status</th>
+          <th style="text-align:right; padding:12px 16px; font-weight:500; color:#6b5e4e;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(products ?? []).map(p => (
+          <tr style="border-bottom:1px solid #e0d8cc;">
+            <td style="padding:12px 16px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                {p.image_url && <img src={p.image_url} alt={p.name} style="width:40px; height:40px; border-radius:6px; object-fit:cover;" />}
+                <div>
+                  <p style="font-weight:500; margin:0;">{p.name}</p>
+                  <p style="font-size:11px; color:#6b5e4e; margin:0;">/product/{p.slug}</p>
+                </div>
+              </div>
+            </td>
+            <td style="padding:12px 16px;">£{(p.price_pence / 100).toFixed(2)}</td>
+            <td style="padding:12px 16px;">
+              <span style={`padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; ${p.published_at ? 'color:#15803d; background:#dcfce7;' : 'color:#6b7280; background:#f3f4f6;'}`}>{p.published_at ? 'Published' : 'Draft'}</span>
+            </td>
+            <td style="padding:12px 16px; text-align:right;">
+              <a href={`/admin/products/${p.id}`} style="font-size:12px; padding:6px 12px; border:1px solid #e0d8cc; border-radius:6px; text-decoration:none; color:#1a1209;">Edit</a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

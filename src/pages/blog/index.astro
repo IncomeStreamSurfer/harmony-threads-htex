@@ -1,0 +1,73 @@
+---
+import Base from "../../layouts/Base.astro";
+import { serverClient } from "../../lib/supabase";
+
+export const prerender = false;
+
+const sb = serverClient();
+const { data: posts } = await sb
+  .from("content")
+  .select("id, slug, title, excerpt, cover_image_url, tags, published_at")
+  .not("published_at", "is", null)
+  .order("published_at", { ascending: false });
+---
+
+<Base
+  title="Journal | Harmony Threads"
+  description="The Harmony Threads journal — stories about music, bands, and the culture of wearing what you love."
+>
+  <div class="max-w-7xl mx-auto px-6 py-20">
+    <nav class="flex items-center gap-2 text-xs mb-12" style="color: var(--muted);">
+      <a href="/" class="hover:text-[var(--accent)] transition-colors">Home</a>
+      <span>/</span>
+      <span>Journal</span>
+    </nav>
+    <div class="mb-12">
+      <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-3 block" style="color: var(--accent);">Our journal</span>
+      <h1 class="text-4xl font-bold" style="font-family: 'Fraunces', serif;">Stories about music</h1>
+    </div>
+    {!posts || posts.length === 0 ? (
+      <div class="py-24 text-center">
+        <h2 class="text-xl font-semibold mb-3" style="font-family: 'Fraunces', serif;">Fresh articles soon</h2>
+        <p class="mb-8" style="color: var(--muted);">We're writing. Sign up to hear first when new stories land.</p>
+        <form id="blog-subscribe-form" class="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+          <input type="hidden" name="renderedAt" id="blogRenderedAt" />
+          <input type="text" name="website" aria-hidden="true" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" />
+          <input type="email" name="email" required placeholder="your@email.com" class="flex-1 px-4 py-3 rounded-lg border text-sm outline-none" style="border-color: var(--border);" />
+          <button type="submit" class="px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all hover:opacity-90 shrink-0" style="background: var(--accent);">Notify me</button>
+        </form>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="group block rounded-xl overflow-hidden border transition-all hover:-translate-y-1 hover:shadow-lg" style="border-color: var(--border); background: white;">
+            {post.cover_image_url ? (
+              <div class="aspect-video overflow-hidden">
+                <img src={post.cover_image_url} alt={post.title} class="w-full h-full object-cover" loading="lazy" />
+              </div>
+            ) : (
+              <div class="aspect-video flex items-center justify-center" style="background: #f5f0e8;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="color: #c8b89a;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+            )}
+            <div class="p-6">
+              {post.published_at && <p class="text-xs mb-2" style="color: var(--muted);">{new Date(post.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>}
+              <h2 class="font-bold text-lg leading-snug mb-2" style="font-family: 'Fraunces', serif;">{post.title}</h2>
+              {post.excerpt && <p class="text-sm leading-relaxed line-clamp-2" style="color: var(--muted);">{post.excerpt}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+  <script>
+    document.getElementById('blogRenderedAt')?.setAttribute('value', String(Date.now()));
+    document.getElementById('blog-subscribe-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const data = new FormData(form);
+      await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: data.get('email'), website: data.get('website'), renderedAt: data.get('renderedAt') }) });
+      form.innerHTML = '<p style="color:#16a34a; font-weight:600;">You\'re on the list!</p>';
+    });
+  </script>
+</Base>

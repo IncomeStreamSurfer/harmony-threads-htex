@@ -1,0 +1,46 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { serverClient } from "../../../lib/supabase";
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const sb = serverClient();
+const { data: page } = await sb.from("pages").select("*").eq("id", id!).single();
+if (!page) return new Response("Not found", { status: 404 });
+---
+
+<AdminLayout title={`Edit: ${page.title}`}>
+  <form method="POST" action={`/api/admin/pages/${page.id}`} style="max-width:640px;">
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Title</label>
+        <input type="text" name="title" value={page.title} required style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Slug</label>
+        <input type="text" name="slug" value={page.slug} required style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; font-family:monospace; box-sizing:border-box;" />
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Meta title</label>
+        <input type="text" name="meta_title" value={page.meta_title ?? ""} style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Meta description</label>
+        <textarea name="meta_description" rows="2" style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; resize:none; box-sizing:border-box;">{page.meta_description ?? ""}</textarea>
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Body HTML</label>
+        <textarea name="body_html" rows="15" style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:12px; font-family:monospace; resize:vertical; box-sizing:border-box;">{page.body_html ?? ""}</textarea>
+      </div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px;">
+        <input type="checkbox" name="published" checked={!!page.published_at} />
+        Published
+      </label>
+      <div style="display:flex; gap:12px;">
+        <button type="submit" style="padding:10px 20px; background:#b85c38; color:white; border:none; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;">Save changes</button>
+        <a href="/admin/pages" style="padding:10px 20px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; text-decoration:none; color:#1a1209;">Cancel</a>
+      </div>
+    </div>
+  </form>
+</AdminLayout>

@@ -1,0 +1,56 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { serverClient } from "../../../lib/supabase";
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const sb = serverClient();
+const { data: product } = await sb.from("products").select("*").eq("id", id!).single();
+if (!product) return new Response("Not found", { status: 404 });
+---
+
+<AdminLayout title={`Edit: ${product.name}`}>
+  <form method="POST" action={`/api/admin/products/${product.id}`} style="max-width:640px;">
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Name</label>
+        <input type="text" name="name" value={product.name} required style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Slug</label>
+        <input type="text" name="slug" value={product.slug} required style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; font-family:monospace; box-sizing:border-box;" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div>
+          <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Price (pence)</label>
+          <input type="number" name="price_pence" value={product.price_pence} required style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+        </div>
+        <div>
+          <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Compare-at (pence)</label>
+          <input type="number" name="compare_at_pence" value={product.compare_at_pence ?? ""} style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+        </div>
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Image URL</label>
+        <input type="text" name="image_url" value={product.image_url ?? ""} style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; box-sizing:border-box;" />
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Description</label>
+        <textarea name="description" rows="3" style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; resize:none; box-sizing:border-box;">{product.description ?? ""}</textarea>
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Body HTML</label>
+        <textarea name="body_html" rows="10" style="width:100%; padding:8px 12px; border:1px solid #e0d8cc; border-radius:8px; font-size:12px; font-family:monospace; resize:vertical; box-sizing:border-box;">{product.body_html ?? ""}</textarea>
+      </div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px;">
+        <input type="checkbox" name="published" checked={!!product.published_at} />
+        Published
+      </label>
+      <div style="display:flex; gap:12px;">
+        <button type="submit" style="padding:10px 20px; background:#b85c38; color:white; border:none; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;">Save changes</button>
+        <a href="/admin/products" style="padding:10px 20px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; text-decoration:none; color:#1a1209;">Cancel</a>
+      </div>
+    </div>
+  </form>
+</AdminLayout>
