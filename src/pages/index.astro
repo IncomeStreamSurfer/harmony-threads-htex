@@ -1,0 +1,236 @@
+---
+import Base from "../layouts/Base.astro";
+import { serverClient } from "../lib/supabase";
+
+const sb = serverClient();
+const { data: featuredProducts } = await sb
+  .from("products")
+  .select("id, slug, name, description, price_pence, compare_at_pence, currency, image_url, tags")
+  .not("published_at", "is", null)
+  .limit(4);
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Harmony Threads",
+  "url": Astro.site?.toString() || "",
+  "description": "Vintage-inspired graphic band tees for music lovers"
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What sizes do you stock?", "acceptedAnswer": { "@type": "Answer", "text": "We stock Small through 3XL. Our tees run true to size." }},
+    { "@type": "Question", "name": "How long does UK delivery take?", "acceptedAnswer": { "@type": "Answer", "text": "Standard delivery is 2-4 working days. Free on orders over \u00a350." }},
+  ]
+};
+
+const products = featuredProducts ?? [];
+---
+
+<Base
+  title="Harmony Threads | Vintage Band Graphic T-Shirts"
+  description="Wear the music that shaped you. Harmony Threads crafts vintage-inspired graphic tees celebrating iconic rock bands. Free UK shipping on orders over \u00a350."
+  structuredData={[websiteSchema, faqSchema]}
+>
+  <!-- HERO -->
+  <section class="relative overflow-hidden min-h-[90vh] flex items-center" style="background: var(--ink);">
+    <div class="absolute inset-0 opacity-20" style="background-image: url('https://picsum.photos/seed/vinylrecord/1600/900'); background-size: cover; background-position: center;"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(26,18,9,0.92) 0%, rgba(26,18,9,0.7) 60%, rgba(184,92,56,0.3) 100%);"></div>
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none overflow-hidden" style="opacity: 0.05;">
+      <span style="font-family: 'Fraunces', serif; font-size: clamp(120px, 20vw, 280px); font-weight: 700; color: white; white-space: nowrap; line-height: 1;">MUSIC</span>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="inline-block text-xs font-semibold tracking-[0.2em] uppercase mb-6 px-3 py-1.5 rounded-full border" style="color: var(--accent); border-color: var(--accent); background: rgba(184,92,56,0.1);">Est. 2026 \u00b7 Harmony Threads</span>
+        <h1 class="text-white leading-[0.95] tracking-tight mb-6" style="font-family: 'Fraunces', serif; font-size: clamp(52px, 8vw, 96px);">Wear the music<br /><em style="font-style: italic; color: var(--accent);">that shaped you</em></h1>
+        <p class="text-lg leading-relaxed mb-8 max-w-md" style="color: rgba(255,255,255,0.7);">Vintage-inspired graphic tees honouring the bands that defined an era. Ethically made, premium cotton \u2014 because your passion deserves better than fast fashion.</p>
+        <div class="flex flex-wrap gap-4">
+          <a href="/shop" class="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-lg transition-all hover:opacity-90" style="background: var(--accent);">Shop the collection <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="/#story" class="inline-flex items-center gap-2 px-8 py-4 font-semibold rounded-lg border transition-all hover:bg-white/10" style="color: white; border-color: rgba(255,255,255,0.3);">Our story</a>
+        </div>
+        <div class="flex flex-wrap gap-6 mt-10">
+          {[['Premium 180gsm cotton'],['Free UK shipping over \u00a350'],['30-day returns']].map(([t]) => (
+            <div class="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="text-sm" style="color: rgba(255,255,255,0.6);">{t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="relative flex justify-center md:justify-end">
+        <div class="relative">
+          <div class="absolute -inset-4 rounded-full blur-3xl opacity-30" style="background: var(--accent);"></div>
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl" style="border: 1px solid rgba(255,255,255,0.1);">
+            <img src="https://burst.shopifycdn.com/photos/forest-hiker.jpg?width=600" alt="The Band graphic t-shirt by Harmony Threads" class="w-full max-w-sm object-cover" loading="eager" />
+            <div class="absolute top-4 right-4 px-3 py-1.5 rounded-full text-sm font-bold text-white" style="background: var(--accent);">From \u00a319.99</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section class="border-y py-5" style="border-color: var(--border); background: white;">
+    <div class="flex items-center justify-center gap-12 max-w-5xl mx-auto px-6 flex-wrap">
+      <div class="flex items-center gap-1.5">
+        {[1,2,3,4,5].map(() => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: #f59e0b;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>)}
+        <span class="text-sm font-medium ml-1">4.9/5 from 140+ reviews</span>
+      </div>
+      <div class="text-sm font-medium">6,200+ orders shipped in 2025</div>
+      <div class="text-sm font-medium">Ethically made in the UK</div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="py-24 max-w-7xl mx-auto px-6">
+    <div class="flex items-end justify-between mb-12">
+      <div>
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-2 block" style="color: var(--accent);">New arrivals</span>
+        <h2 class="text-4xl font-bold leading-tight" style="font-family: 'Fraunces', serif;">The collection</h2>
+      </div>
+      <a href="/shop" class="hidden md:inline-flex items-center gap-2 text-sm font-medium" style="color: var(--accent);">View all <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    {products.length === 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1,2,3,4].map(() => <div class="rounded-xl overflow-hidden border" style="border-color: var(--border);"><div class="aspect-square bg-gray-100 animate-pulse"></div><div class="p-4 space-y-2"><div class="h-4 bg-gray-100 rounded animate-pulse w-3/4"></div><div class="h-4 bg-gray-100 rounded animate-pulse w-1/4"></div></div></div>)}
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.map((p) => (
+          <a href={`/product/${p.slug}`} class="group rounded-xl overflow-hidden border transition-all hover:-translate-y-1 hover:shadow-lg" style="border-color: var(--border); background: white;">
+            <div class="aspect-square overflow-hidden bg-gray-50">
+              {p.image_url ? <img src={p.image_url} alt={p.name} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" /> : <div class="w-full h-full flex items-center justify-center" style="background: #f5f0e8;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="color: #c8b89a;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>}
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold text-sm leading-tight mb-1">{p.name}</h3>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm">\u00a3{(p.price_pence / 100).toFixed(2)}</span>
+                {p.compare_at_pence && p.compare_at_pence > p.price_pence && <span class="text-xs line-through" style="color: var(--muted);">\u00a3{(p.compare_at_pence / 100).toFixed(2)}</span>}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+    <div class="mt-8 text-center md:hidden">
+      <a href="/shop" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border font-medium text-sm" style="border-color: var(--border);">View all products</a>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section id="story" class="py-24" style="background: var(--ink);">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <div>
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-4 block" style="color: var(--accent);">Our story</span>
+        <h2 class="text-4xl font-bold text-white leading-tight mb-6" style="font-family: 'Fraunces', serif;">Born from a crate of vinyl and a sewing machine</h2>
+        <p class="text-lg leading-relaxed mb-4" style="color: rgba(255,255,255,0.7);">Harmony Threads started in 2026 after our founder \u2014 a lifelong collector and weekend musician \u2014 couldn't find merch that honoured the bands that mattered without looking like it was printed in a hurry on an industrial estate.</p>
+        <p class="text-base leading-relaxed mb-8" style="color: rgba(255,255,255,0.6);">Every design is researched, sketched, and sweated over. We source premium 180gsm ring-spun cotton, print with water-based inks, and pack every order with the care you'd give a first-press LP.</p>
+        <a href="/about" class="inline-flex items-center gap-2 font-medium text-sm transition-all hover:gap-3" style="color: var(--accent);">Read the full story <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="aspect-square rounded-xl overflow-hidden"><img src="https://picsum.photos/seed/vinyl1/400/400" alt="Vinyl" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden mt-8"><img src="https://picsum.photos/seed/concert2/400/400" alt="Concert" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden -mt-8"><img src="https://picsum.photos/seed/tshirt3/400/400" alt="T-shirts" class="w-full h-full object-cover" loading="lazy" /></div>
+        <div class="aspect-square rounded-xl overflow-hidden"><img src="https://picsum.photos/seed/fabric4/400/400" alt="Fabric" class="w-full h-full object-cover" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUE PROPS -->
+  <section class="py-24 max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        { title: 'Made with conviction', body: 'Premium 180gsm ring-spun cotton, water-based inks. A piece you\'ll still be wearing in ten years.' },
+        { title: 'Ships in 48 hours', body: 'Order before 2pm and it\'s packed the same day. Free Royal Mail tracked delivery on UK orders over \u00a350.' },
+        { title: '30-day returns', body: 'Wrong size? No questions asked returns within 30 days. We sort it, you keep the music playing.' },
+      ].map(item => (
+        <div class="p-8 rounded-xl border" style="border-color: var(--border); background: white;">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-5" style="background: rgba(184,92,56,0.1);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <h3 class="text-xl font-bold mb-3" style="font-family: 'Fraunces', serif;">{item.title}</h3>
+          <p class="text-sm leading-relaxed" style="color: var(--muted);">{item.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="py-24" style="background: #f3ede4;">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-3 block" style="color: var(--accent);">What people say</span>
+        <h2 class="text-4xl font-bold" style="font-family: 'Fraunces', serif;">Heard it from the crowd</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { quote: 'Finally a band tee that doesn\'t feel like a souvenir. The weight of the cotton is perfect.', name: 'Marcus T.', detail: 'The Band T-Shirt, Forest Green' },
+          { quote: 'Ordered on a Tuesday, arrived Thursday. The print is crisp and colours exactly match the photos.', name: 'Sarah K.', detail: 'Verified customer' },
+          { quote: 'I collect vintage band merch and honestly this is better quality than pieces from the 80s.', name: 'Dom R.', detail: 'Music collector, Bristol' },
+        ].map(t => (
+          <div class="p-8 rounded-xl border" style="border-color: var(--border); background: white;">
+            <div class="flex gap-1 mb-4">{[1,2,3,4,5].map(() => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: #f59e0b;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>)}</div>
+            <blockquote class="text-sm leading-relaxed mb-5">"{t.quote}"</blockquote>
+            <div><p class="text-sm font-semibold">{t.name}</p><p class="text-xs mt-0.5" style="color: var(--muted);">{t.detail}</p></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-24 max-w-3xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold" style="font-family: 'Fraunces', serif;">Common questions answered</h2>
+    </div>
+    <div class="space-y-4">
+      {[
+        { q: 'What sizes do you stock?', a: 'We currently stock Small through 3XL in all designs. Our tees run true to size \u2014 if you\'re between sizes, size up for a relaxed fit.' },
+        { q: 'How long does UK delivery take?', a: 'Standard delivery is 2-4 working days via Royal Mail Tracked 48. Orders over \u00a350 ship free. Express next-day available for \u00a35.95.' },
+        { q: 'Can I return or exchange a t-shirt?', a: '30 days from delivery, unworn and in original packaging. Email returns@harmonythreads.co.uk and we\'ll sort it straight away.' },
+        { q: 'Are the tees machine-washable?', a: 'Wash inside-out at 30\u00b0C and tumble dry low. The print is water-based and designed to last hundreds of washes without fading.' },
+        { q: 'Do you ship internationally?', a: 'We ship to EU countries and the US. International shipping starts from \u00a38.99 and typically takes 5-10 working days.' },
+      ].map(item => (
+        <details class="group border rounded-xl overflow-hidden" style="border-color: var(--border);">
+          <summary class="flex items-center justify-between px-6 py-5 cursor-pointer font-medium text-sm list-none hover:bg-gray-50 transition-colors">
+            {item.q}
+            <svg class="shrink-0 transition-transform group-open:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="px-6 pb-5 text-sm leading-relaxed" style="color: var(--muted);">{item.a}</div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section id="newsletter" class="py-20" style="background: var(--ink);">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4" style="font-family: 'Fraunces', serif;">New bands drop first to the list</h2>
+      <p class="mb-8" style="color: rgba(255,255,255,0.6);">Join 3,400+ music lovers. New designs, restocks, and the occasional vinyl recommendation.</p>
+      <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input type="hidden" name="renderedAt" id="renderedAt" />
+        <input type="text" name="website" aria-hidden="true" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" />
+        <input type="email" name="email" required placeholder="your@email.com" class="flex-1 px-4 py-3.5 rounded-lg text-sm outline-none border" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: white;" />
+        <button type="submit" class="px-6 py-3.5 rounded-lg text-white font-semibold text-sm shrink-0" style="background: var(--accent);">Join the list</button>
+      </form>
+      <p id="newsletter-msg" class="text-sm mt-3 hidden" style="color: rgba(255,255,255,0.7);"></p>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById('renderedAt')?.setAttribute('value', String(Date.now()));
+    document.getElementById('newsletter-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const data = new FormData(form);
+      const msg = document.getElementById('newsletter-msg');
+      try {
+        await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: data.get('email'), website: data.get('website'), renderedAt: data.get('renderedAt') }) });
+        if (msg) { msg.textContent = "You're on the list. Watch your inbox."; msg.classList.remove('hidden'); }
+        form.reset();
+      } catch {
+        if (msg) { msg.textContent = "Something went wrong. Try again."; msg.classList.remove('hidden'); }
+      }
+    });
+  </script>
+</Base>

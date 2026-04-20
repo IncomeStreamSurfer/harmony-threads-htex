@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": Astro.site?.toString() || "" },
+    { "@type": "ListItem", "position": 2, "name": "Contact", "item": `${Astro.site || ""}contact` },
+  ],
+};
+---
+
+<Base
+  title="Contact Harmony Threads | Get in Touch"
+  description="Get in touch with Harmony Threads. Questions about orders, returns, or sizing \u2014 we're here and we reply within 1 business day."
+  structuredData={breadcrumb}
+>
+  <div class="max-w-7xl mx-auto px-6 py-20">
+    <nav class="flex items-center gap-2 text-xs mb-12" style="color: var(--muted);">
+      <a href="/" class="hover:text-[var(--accent)] transition-colors">Home</a><span>/</span><span>Contact</span>
+    </nav>
+    <div class="grid md:grid-cols-2 gap-16 items-start">
+      <div>
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase mb-4 block" style="color: var(--accent);">Say hello</span>
+        <h1 class="text-4xl font-bold mb-5" style="font-family: 'Fraunces', serif;">We read every message</h1>
+        <p class="leading-relaxed mb-8" style="color: var(--muted);">Have a question about your order, need help with sizing, or just want to tell us what band you'd love to see next? Drop us a line \u2014 we reply within 1 business day.</p>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background: rgba(184,92,56,0.1);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div><p class="text-xs font-medium uppercase tracking-wider mb-0.5" style="color: var(--muted);">Email</p><a href="mailto:hello@harmonythreads.co.uk" class="text-sm hover:text-[var(--accent)] transition-colors">hello@harmonythreads.co.uk</a></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background: rgba(184,92,56,0.1);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><p class="text-xs font-medium uppercase tracking-wider mb-0.5" style="color: var(--muted);">Response time</p><p class="text-sm">Within 1 business day</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="p-8 rounded-2xl border" style="border-color: var(--border); background: white;">
+        <form id="contact-form" class="space-y-5">
+          <input type="hidden" name="renderedAt" id="renderedAt" />
+          <input type="text" name="website" aria-hidden="true" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" />
+          <div><label class="block text-sm font-medium mb-1.5" for="name">Your name</label><input id="name" name="name" type="text" required placeholder="Jane Smith" class="w-full px-4 py-3 rounded-lg border text-sm outline-none" style="border-color: var(--border);" /></div>
+          <div><label class="block text-sm font-medium mb-1.5" for="email">Email address</label><input id="email" name="email" type="email" required placeholder="jane@example.com" class="w-full px-4 py-3 rounded-lg border text-sm outline-none" style="border-color: var(--border);" /></div>
+          <div><label class="block text-sm font-medium mb-1.5" for="message">Message</label><textarea id="message" name="message" required rows="5" placeholder="Tell us what's on your mind\u2026" class="w-full px-4 py-3 rounded-lg border text-sm outline-none resize-none" style="border-color: var(--border);"></textarea></div>
+          <button type="submit" id="submit-btn" class="w-full py-3.5 text-white font-semibold rounded-lg transition-all hover:opacity-90" style="background: var(--accent);">Send message</button>
+          <p id="form-msg" class="text-sm text-center hidden"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('renderedAt')?.setAttribute('value', String(Date.now()));
+    document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+      const msg = document.getElementById('form-msg')!;
+      const data = new FormData(form);
+      btn.disabled = true; btn.textContent = 'Sending\u2026';
+      try {
+        const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: data.get('name'), email: data.get('email'), message: data.get('message'), website: data.get('website'), renderedAt: data.get('renderedAt') }) });
+        if (res.ok) { msg.textContent = "Thanks \u2014 we'll be in touch within 1 business day."; msg.style.color = '#16a34a'; msg.classList.remove('hidden'); form.reset(); btn.textContent = 'Message sent \u2713'; btn.style.background = '#16a34a'; }
+        else throw new Error('Server error');
+      } catch { msg.textContent = 'Something went wrong. Please try again or email us directly.'; msg.style.color = '#dc2626'; msg.classList.remove('hidden'); btn.disabled = false; btn.textContent = 'Send message'; }
+    });
+  </script>
+</Base>
