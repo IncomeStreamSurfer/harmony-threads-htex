@@ -1,0 +1,72 @@
+---
+import Base from "../../layouts/Base.astro";
+import { stripe } from "../../lib/stripe";
+
+export const prerender = false;
+
+const session_id = Astro.url.searchParams.get("session_id");
+let session: any = null;
+
+if (session_id) {
+  try {
+    session = await stripe().checkout.sessions.retrieve(session_id, {
+      expand: ["line_items"],
+    });
+  } catch {
+    // ignore
+  }
+}
+---
+
+<Base
+  title="Order Confirmed | Harmony Threads"
+  description="Your Harmony Threads order is confirmed."
+  noindex={true}
+>
+  <div class="max-w-2xl mx-auto px-6 py-24 text-center">
+    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style="background: rgba(22,163,74,0.1);">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #16a34a;">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+
+    <h1 class="text-4xl font-bold mb-4" style="font-family: 'Fraunces', serif;">Order confirmed</h1>
+    <p class="text-lg mb-2" style="color: var(--muted);">
+      {session?.customer_details?.email
+        ? `We've sent a confirmation to ${session.customer_details.email}.`
+        : "Your order is on its way."}
+    </p>
+
+    {session && (
+      <div class="mt-8 p-6 rounded-xl border text-left space-y-4" style="border-color: var(--border); background: white;">
+        <h2 class="font-semibold">Order summary</h2>
+        <div class="space-y-2">
+          {session.line_items?.data?.map((item: any) => (
+            <div class="flex justify-between text-sm">
+              <span>{item.description} × {item.quantity}</span>
+              <span>£{(item.amount_total / 100).toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+        <div class="pt-3 border-t flex justify-between font-bold" style="border-color: var(--border);">
+          <span>Total</span>
+          <span>£{((session.amount_total ?? 0) / 100).toFixed(2)}</span>
+        </div>
+      </div>
+    )}
+
+    <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/shop" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-white font-semibold rounded-lg transition-all hover:opacity-90" style="background: var(--accent);">
+        Continue shopping
+      </a>
+      <a href="/" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 font-medium rounded-lg border transition-all hover:bg-gray-50" style="border-color: var(--border);">
+        Back to home
+      </a>
+    </div>
+
+    <script>
+      localStorage.removeItem('ht_cart');
+      window.dispatchEvent(new Event('cart:updated'));
+    </script>
+  </div>
+</Base>

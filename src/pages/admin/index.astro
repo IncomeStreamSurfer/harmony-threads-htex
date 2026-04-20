@@ -1,0 +1,57 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { serverClient } from "../../lib/supabase";
+
+export const prerender = false;
+
+const sb = serverClient();
+const [
+  { count: productCount },
+  { count: orderCount },
+  { count: pageCount },
+  { count: contentCount },
+  { count: subscriberCount },
+] = await Promise.all([
+  sb.from("products").select("id", { count: "exact", head: true }),
+  sb.from("orders").select("id", { count: "exact", head: true }),
+  sb.from("pages").select("id", { count: "exact", head: true }),
+  sb.from("content").select("id", { count: "exact", head: true }),
+  sb.from("subscribers").select("id", { count: "exact", head: true }),
+]);
+---
+
+<AdminLayout title="Dashboard">
+  <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:32px;">
+    {[
+      { label: "Products", count: productCount ?? 0, href: "/admin/products", color: "#b85c38" },
+      { label: "Orders", count: orderCount ?? 0, href: "/admin/orders", color: "#0ea5e9" },
+      { label: "Pages", count: pageCount ?? 0, href: "/admin/pages", color: "#8b5cf6" },
+      { label: "Blog posts", count: contentCount ?? 0, href: "#", color: "#10b981" },
+      { label: "Subscribers", count: subscriberCount ?? 0, href: "#", color: "#ec4899" },
+    ].map(stat => (
+      <a href={stat.href} style={`background:white; border:1px solid #e0d8cc; border-radius:12px; padding:20px; text-decoration:none; display:block; transition:box-shadow 0.2s;`}>
+        <p style={`font-size:32px; font-weight:700; margin:0 0 4px; font-family:'Fraunces',serif; color:${stat.color};`}>{stat.count}</p>
+        <p style="font-size:13px; color:#6b5e4e; margin:0;">{stat.label}</p>
+      </a>
+    ))}
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <div style="background:white; border:1px solid #e0d8cc; border-radius:12px; padding:24px;">
+      <h2 style="font-family:'Fraunces',serif; font-size:18px; margin:0 0 16px;">Quick actions</h2>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        {[
+          { href: "/admin/products", label: "Manage products" },
+          { href: "/admin/pages", label: "Edit pages" },
+          { href: "/admin/orders", label: "View orders" },
+          { href: "/shop", label: "View storefront →" },
+        ].map(link => (
+          <a href={link.href} style="display:block; padding:10px 16px; border:1px solid #e0d8cc; border-radius:8px; font-size:13px; text-decoration:none; color:#1a1209; transition:border-color 0.2s;">{link.label}</a>
+        ))}
+      </div>
+    </div>
+    <div style="background:white; border:1px solid #e0d8cc; border-radius:12px; padding:24px;">
+      <h2 style="font-family:'Fraunces',serif; font-size:18px; margin:0 0 16px;">About this dashboard</h2>
+      <p style="font-size:13px; color:#6b5e4e; line-height:1.6;">This admin panel gives you direct access to your Supabase database. Edit products, pages, and orders. All changes are live immediately.</p>
+    </div>
+  </div>
+</AdminLayout>

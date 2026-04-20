@@ -1,0 +1,32 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="Checkout Cancelled | Harmony Threads"
+  description="Your cart is saved. Come back when you're ready."
+  noindex={true}
+>
+  <div class="max-w-xl mx-auto px-6 py-24 text-center">
+    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style="background: rgba(184,92,56,0.1);">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+    </div>
+    <h1 class="text-4xl font-bold mb-4" style="font-family: 'Fraunces', serif;">Your cart is saved</h1>
+    <p class="text-lg mb-8" style="color: var(--muted);">No rush — your items will be here when you're ready.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/shop" class="inline-flex items-center justify-center px-6 py-3.5 text-white font-semibold rounded-lg transition-all hover:opacity-90" style="background: var(--accent);">
+        Back to shop
+      </a>
+      <button id="reopen-cart" class="inline-flex items-center justify-center px-6 py-3.5 font-medium rounded-lg border transition-all hover:bg-gray-50" style="border-color: var(--border);">
+        View cart
+      </button>
+    </div>
+    <script>
+      document.getElementById('reopen-cart')?.addEventListener('click', () => {
+        window.dispatchEvent(new Event('cart:open'));
+      });
+    </script>
+  </div>
+</Base>
